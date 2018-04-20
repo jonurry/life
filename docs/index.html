@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Life</title>
+
+  <!-- Main CSS -->
+  <!-- <link rel="stylesheet" href="css/app.css"> -->
+  <!-- Favicons -->
+  <!-- <link rel="shortcut icon" href="img/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="img/favicons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="img/favicons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="img/favicons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="img/favicons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="img/favicons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="img/favicons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="img/favicons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="img/favicons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="img/favicons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="img/favicons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="img/favicons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png"> -->
+  <!-- Manifest -->
+  <!-- <link rel="manifest" href="manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="img/favicons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff"> -->
+</head>
+
+<body>
+  <label for="rows">Rows:</label>
+  <input id="rows" type="number" name="rows" value="20">
+  <label for="columns">Columns:</label>
+  <input id="columns" type="number" name="columns" value="60">
+  <button id="life">Create life</button>
+  <button id="next">Next generation</button>
+  <button id="auto">Auto pilot on</button>
+  <div id="grid"></div>
+  <!-- JavaScript -->
+  <!-- <script type="module" src="./js/app.js"></script> -->
+  <script>
+    class Life {
+      constructor(width = 50, height = 50, density = 5) {
+        this.initialiseLife(width, height, density);
+      }
+      initialiseLife(width = 50, height = 50, density = 5) {
+        // density is a weighting from 0 to 10
+        // 0 = no life
+        // 5 = 50/50 chance of life
+        // 10 = life everywhere
+        this.rows = [];
+        this.height = height;
+        this.width = width;
+        for (let row = 0; row < width; row++) {
+          let columns = [];
+          for (let col = 0; col < height; col++) {
+            columns[col] = Math.floor(Math.random() + 0.1 * density);
+          }
+          this.rows[row] = columns;
+        }
+      }
+      nextGeneration() {
+        // Each generation (turn), the following rules are applied:
+        // 1. Any live cell with fewer than two or more than three 
+        //    live neighbours dies.
+        // 2. Any live cell with two or three live neighbours 
+        //    lives on to the next generation.
+        // 3. Any dead cell with exactly three live neighbours 
+        //    becomes a live cell.
+        let nextGen = [];
+        for (let row = 0; row < this.width; row++) {
+          let columns = [];
+          for (let col = 0; col < this.height; col++) {
+            let value = this.rows[row][col];
+            columns[col] = value;
+            let neighbours = this.numberOfNeighbours(row, col);
+            if (value === 1) {
+              // cell is alive
+              if (neighbours < 2 || neighbours > 3) {
+                // cell dies
+                columns[col] = 0;
+              }
+            } else {
+              // cell is dead
+              if (neighbours === 3) {
+                // cell lives
+                columns[col] = 1;
+              }
+            }
+          }
+          nextGen[row] = columns;
+        }
+        this.rows = nextGen;
+      }
+      numberOfNeighbours(row, col) {
+        let count = 0;
+        for (let x = row - 1; x <= row + 1; x++) {
+          for (let y = col - 1; y <= col + 1; y++) {
+            if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+              count += this.rows[x][y];
+            }
+          }
+        }
+        count -= this.rows[row][col];
+        return count;
+      }
+    }
+
+    // iterate over Life using a generator
+    Life.prototype[Symbol.iterator] = function* () {
+      for (let row = 0; row < this.width; row++) {
+        let columns = [];
+        for (let col = 0; col < this.height; col++) {
+          yield {
+            row,
+            col,
+            value: this.rows[row][col],
+            numberOfNeighbours: this.numberOfNeighbours.bind(this, row, col)
+          };
+        }
+      }
+    }
+
+    let gridElement = document.getElementById('grid');
+    let nextGenButton = document.getElementById('next');
+    let autoPilotButton = document.getElementById('auto');
+    let createLifeButton = document.getElementById('life');
+    let life;
+
+    const renderLife = () => {
+      if (gridElement.innerHTML === '') {
+        // grid is empty so populate with base elements
+        // use html table as basis for grid
+        let currentRow = -1;
+        let table = document.createElement('table');
+        let tableRow;
+        let tableCell;
+        for (let cell of life) {
+          if (currentRow !== cell.row) {
+            tableRow = document.createElement('tr');
+            table.appendChild(tableRow);
+            currentRow = cell.row;
+          }
+          tableCell = document.createElement('td');
+          tableCell.dataset.row = cell.row;
+          tableCell.dataset.col = cell.col;
+          tableCell.appendChild(document.createTextNode(''));
+          tableRow.appendChild(tableCell);
+        }
+        gridElement.appendChild(table);
+      }
+      // iterate through life and update content
+      for (let cell of life) {
+        // article[data-col='3']
+        let tableCell = document.querySelector(`td[data-row='${cell.row}'][data-col='${cell.col}']`);
+        tableCell.firstChild.nodeValue = cell.value;
+      }
+    }
+
+    const initialiseLife = (width, height, density = 5) => {
+      life = new Life(width, height, density);
+      gridElement.innerHtml = '';
+    }
+
+    nextGenButton.addEventListener('click', () => {
+      life.nextGeneration();
+      renderLife();
+    });
+
+    autoPilotButton.addEventListener('click', () => {
+      setInterval(() => {
+        life.nextGeneration();
+        renderLife();
+      }, 1000);
+    });
+
+    createLifeButton.addEventListener('click', () => {
+      let columns = document.getElementById('columns').value;
+      let rows = document.getElementById('rows').value;
+      initialiseLife(rows, columns, 3);
+      renderLife();
+    });
+
+  </script>
+</body>
+
+</html>
