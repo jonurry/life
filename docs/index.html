@@ -119,12 +119,15 @@
         for (let x = row - 1; x <= row + 1; x++) {
           for (let y = col - 1; y <= col + 1; y++) {
             if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-              count += this.rows[x][y];
+              count += this.rows[x][y] ? 1 : 0;
             }
           }
         }
-        count -= this.rows[row][col];
+        count -= this.rows[row][col] ? 1 : 0;
         return count;
+      }
+      toggleLife(row, col) {
+        this.rows[row][col] = !this.rows[row][col];
       }
     }
 
@@ -171,6 +174,14 @@
           divCell.dataset.row = cell.row;
           divCell.dataset.col = cell.col;
           divCell.className = 'cell';
+          divCell.addEventListener('click', (e) => {
+            life.toggleLife(cell.row, cell.col);
+            if (life.rows[e.target.dataset.row][e.target.dataset.col]) {
+              e.target.className = 'cell alive';
+            } else {
+              e.target.className = 'cell dead';
+            }
+          });
           tableCell.appendChild(divCell);
           tableRow.appendChild(tableCell);
         }
@@ -193,11 +204,6 @@
       gridElement.innerHtml = '';
     }
 
-    nextGenButton.addEventListener('click', () => {
-      life.nextGeneration();
-      renderLife();
-    });
-
     autoPilotButton.addEventListener('click', () => {
       if (autoPilot) {
         clearInterval(autoPilotID);
@@ -215,6 +221,11 @@
       let columns = document.getElementById('columns').value;
       let rows = document.getElementById('rows').value;
       initialiseLife(rows, columns, 3);
+      renderLife();
+    });
+
+    nextGenButton.addEventListener('click', () => {
+      life.nextGeneration();
       renderLife();
     });
 
