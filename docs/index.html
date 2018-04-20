@@ -21,6 +21,13 @@
 
     .dead {
       background-color: darkgray;
+      height: 10px;
+      margin: 5px;
+      width: 10px;
+    }
+
+    #grid div {
+      transition: width .5s, height .5s, margin .5s, background-color 1s;
     }
   </style>
 
@@ -154,8 +161,8 @@
     let autoPilotID = false;
     let life;
 
-    const renderLife = () => {
-      if (gridElement.innerHTML === '') {
+    const renderLife = (resetGrid = false) => {
+      if (resetGrid) {
         // grid is empty so populate with base elements
         // use html table as basis for grid
         let currentRow = -1;
@@ -163,6 +170,9 @@
         let table = document.createElement('table');
         let tableRow;
         let tableCell;
+        if (gridElement.firstChild) {
+          gridElement.removeChild(gridElement.firstChild);
+        }
         for (let cell of life) {
           if (currentRow !== cell.row) {
             tableRow = document.createElement('tr');
@@ -170,18 +180,27 @@
             currentRow = cell.row;
           }
           tableCell = document.createElement('td');
-          divCell = document.createElement('div');
-          divCell.dataset.row = cell.row;
-          divCell.dataset.col = cell.col;
-          divCell.className = 'cell';
-          divCell.addEventListener('click', (e) => {
-            life.toggleLife(cell.row, cell.col);
-            if (life.rows[e.target.dataset.row][e.target.dataset.col]) {
-              e.target.className = 'cell alive';
+          tableCell.dataset.row = cell.row;
+          tableCell.dataset.col = cell.col;
+          tableCell.addEventListener('click', (e) => {
+            let target;
+            let data;
+            if (e.target.tagName == 'DIV') {
+              target = e.target;
+              data = e.target.parentNode;
             } else {
-              e.target.className = 'cell dead';
+              target = e.target.firstChild;
+              data = e.target;
+            }
+            life.toggleLife(cell.row, cell.col);
+            if (life.rows[data.dataset.row][data.dataset.col]) {
+              target.className = 'cell alive';
+            } else {
+              target.className = 'cell dead';
             }
           });
+          divCell = document.createElement('div');
+          divCell.className = 'cell';
           tableCell.appendChild(divCell);
           tableRow.appendChild(tableCell);
         }
@@ -190,18 +209,24 @@
       // iterate through life and update content
       for (let cell of life) {
         // article[data-col='3']
-        let divCell = document.querySelector(`div[data-row='${cell.row}'][data-col='${cell.col}']`);
+        let divCell = document.querySelector(`td[data-row='${cell.row}'][data-col='${cell.col}']`);
         if (cell.value) {
-          divCell.className = 'cell alive';
+          divCell.firstChild.className = 'cell alive';
         } else {
-          divCell.className = 'cell dead';
+          divCell.firstChild.className = 'cell dead';
         }
       }
     }
 
     const initialiseLife = (width, height, density = 5) => {
       life = new Life(width, height, density);
-      gridElement.innerHtml = '';
+      renderLife(true);
+    }
+
+    const createLife = () => {
+      let columns = document.getElementById('columns').value;
+      let rows = document.getElementById('rows').value;
+      initialiseLife(rows, columns, 3);
     }
 
     autoPilotButton.addEventListener('click', () => {
@@ -218,16 +243,15 @@
     });
 
     createLifeButton.addEventListener('click', () => {
-      let columns = document.getElementById('columns').value;
-      let rows = document.getElementById('rows').value;
-      initialiseLife(rows, columns, 3);
-      renderLife();
+      createLife();
     });
 
     nextGenButton.addEventListener('click', () => {
       life.nextGeneration();
       renderLife();
     });
+
+    createLife();
 
   </script>
 </body>
