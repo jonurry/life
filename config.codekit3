@@ -21,6 +21,24 @@
 		"oA": 0,
 		"oAP": "\/docs\/index.html",
 		"oF": 0
+		},
+	"\/README.md": {
+		"cB": 0,
+		"cS": 0,
+		"eF": 1,
+		"eL": 1,
+		"ema": 1,
+		"eSQ": 1,
+		"ft": 4096,
+		"oA": 0,
+		"oAP": "\/docs\/README.html",
+		"oF": 0,
+		"oFM": 0,
+		"oS": 0,
+		"pHT": 0,
+		"pME": 1,
+		"rFN": 0,
+		"uCM": 0
 		}
 	},
 "hooks": [
@@ -33,7 +51,7 @@
 	"displayValueWasSetByUser": 0,
 	"iconImageName": "brackets_orange",
 	"iconImageWasSetByUser": 0,
-	"lastBuiltDate": 545915942
+	"lastBuiltDate": 545925288
 	},
 "projectSettings": {
 	"abortBuildOnError": 1,

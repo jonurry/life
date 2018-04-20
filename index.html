@@ -7,6 +7,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Life</title>
 
+  <style type="text/css">
+    .cell {
+      background-color: darkkhaki;
+      border-radius: 50%;
+      height: 20px;
+      width: 20px;
+    }
+
+    .alive {
+      background-color: red;
+    }
+
+    .dead {
+      background-color: darkgray;
+    }
+  </style>
+
   <!-- Main CSS -->
   <!-- <link rel="stylesheet" href="css/app.css"> -->
   <!-- Favicons -->
@@ -59,7 +76,7 @@
         for (let row = 0; row < width; row++) {
           let columns = [];
           for (let col = 0; col < height; col++) {
-            columns[col] = Math.floor(Math.random() + 0.1 * density);
+            columns[col] = !!Math.floor(Math.random() + 0.1 * density);
           }
           this.rows[row] = columns;
         }
@@ -79,7 +96,7 @@
             let value = this.rows[row][col];
             columns[col] = value;
             let neighbours = this.numberOfNeighbours(row, col);
-            if (value === 1) {
+            if (value) {
               // cell is alive
               if (neighbours < 2 || neighbours > 3) {
                 // cell dies
@@ -130,6 +147,8 @@
     let nextGenButton = document.getElementById('next');
     let autoPilotButton = document.getElementById('auto');
     let createLifeButton = document.getElementById('life');
+    let autoPilot = false;
+    let autoPilotID = false;
     let life;
 
     const renderLife = () => {
@@ -137,6 +156,7 @@
         // grid is empty so populate with base elements
         // use html table as basis for grid
         let currentRow = -1;
+        let divCell;
         let table = document.createElement('table');
         let tableRow;
         let tableCell;
@@ -147,9 +167,11 @@
             currentRow = cell.row;
           }
           tableCell = document.createElement('td');
-          tableCell.dataset.row = cell.row;
-          tableCell.dataset.col = cell.col;
-          tableCell.appendChild(document.createTextNode(''));
+          divCell = document.createElement('div');
+          divCell.dataset.row = cell.row;
+          divCell.dataset.col = cell.col;
+          divCell.className = 'cell';
+          tableCell.appendChild(divCell);
           tableRow.appendChild(tableCell);
         }
         gridElement.appendChild(table);
@@ -157,8 +179,12 @@
       // iterate through life and update content
       for (let cell of life) {
         // article[data-col='3']
-        let tableCell = document.querySelector(`td[data-row='${cell.row}'][data-col='${cell.col}']`);
-        tableCell.firstChild.nodeValue = cell.value;
+        let divCell = document.querySelector(`div[data-row='${cell.row}'][data-col='${cell.col}']`);
+        if (cell.value) {
+          divCell.className = 'cell alive';
+        } else {
+          divCell.className = 'cell dead';
+        }
       }
     }
 
@@ -173,10 +199,16 @@
     });
 
     autoPilotButton.addEventListener('click', () => {
-      setInterval(() => {
-        life.nextGeneration();
-        renderLife();
-      }, 1000);
+      if (autoPilot) {
+        clearInterval(autoPilotID);
+      } else {
+        autoPilotID = setInterval(() => {
+          life.nextGeneration();
+          renderLife();
+        }, 1000);
+      }
+      autoPilot = !autoPilot;
+      autoPilotButton.textContent = `Auto pilot ${autoPilot ? 'off' : 'on'}`;
     });
 
     createLifeButton.addEventListener('click', () => {
