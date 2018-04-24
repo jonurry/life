@@ -9,25 +9,92 @@
 
   <style type="text/css">
     .cell {
-      background-color: darkkhaki;
       border-radius: 50%;
       height: 20px;
+      margin: 0px;
       width: 20px;
     }
 
     .alive {
-      background-color: red;
+      /* animation: alive-pulse 1s infinite; */
+      background-color: #f5b623;
+      height: 18px;
+      margin: 1px;
+      width: 18px;
     }
 
     .dead {
+      /* animation: dead-pulse 1s infinite; */
       background-color: darkgray;
-      height: 10px;
-      margin: 5px;
-      width: 10px;
+      height: 6px;
+      margin: 7px;
+      width: 6px;
     }
 
-    #grid div {
-      transition: width .5s, height .5s, margin .5s, background-color 1s;
+    .alive,
+    .dead {
+      transition: width 1s, height 1s, margin 1s, background-color 1s;
+    }
+
+    @keyframes alive-pulse {
+      0% {
+        background-color: #f5b623;
+        /* height: 18px;
+        margin: 1px;
+        width: 18px; */
+      }
+      25% {
+        background-color: #f6dd7a;
+        /* height: 16px;
+        margin: 2px;
+        width: 16px; */
+      }
+      50% {
+        background-color: #f5b623;
+        /* height: 18px;
+        margin: 1px;
+        width: 18px; */
+      }
+      75% {
+        background-color: #cda74e;
+        /* height: 20px;
+        margin: 0px;
+        width: 20px; */
+      }
+      100% {
+        background-color: #f5b623;
+        /* height: 18px;
+        margin: 1px;
+        width: 18px; */
+      }
+    }
+
+    @keyframes dead-pulse {
+      0% {
+        height: 6px;
+        margin: 7px;
+        width: 6px;
+      }
+      25% {
+        height: 4px;
+        margin: 8px;
+        width: 4px;
+      }
+      50% {
+        height: 6px;
+        margin: 7px;
+        width: 6px;
+      }
+      75% {
+        height: 8px;
+        margin: 6px;
+        width: 8px;
+      }
+      100% {
+        height: 6px;
+        margin: 7px;
+        width: 6px;
+      }
     }
   </style>
 
@@ -63,7 +130,7 @@
   <input id="columns" type="number" name="columns" value="60">
   <button id="life">Create life</button>
   <button id="next">Next generation</button>
-  <button id="auto">Auto pilot on</button>
+  <button id="auto">Switch autopilot on</button>
   <div id="grid"></div>
   <!-- JavaScript -->
   <!-- <script type="module" src="./js/app.js"></script> -->
@@ -158,7 +225,7 @@
     let autoPilotButton = document.getElementById('auto');
     let createLifeButton = document.getElementById('life');
     let autoPilot = false;
-    let autoPilotID = false;
+    let autoPilotID = 0;
     let life;
 
     const renderLife = (resetGrid = false) => {
@@ -210,12 +277,21 @@
       for (let cell of life) {
         // article[data-col='3']
         let divCell = document.querySelector(`td[data-row='${cell.row}'][data-col='${cell.col}']`);
-        if (cell.value) {
-          divCell.firstChild.className = 'cell alive';
-        } else {
-          divCell.firstChild.className = 'cell dead';
+        let targetClass = cell.value ? 'cell alive' : 'cell dead';
+        if (divCell.firstChild.className !== targetClass) {
+          divCell.firstChild.className = targetClass;
         }
       }
+      if (autoPilot && autoPilotID === 0) {
+        autoPilotID = setInterval(() => {
+          life.nextGeneration();
+          renderLife();
+        }, 1000);
+      } else if (!autoPilot && autoPilotID !== 0) {
+        clearInterval(autoPilotID);
+        autoPilotID = 0;
+      }
+
     }
 
     const initialiseLife = (width, height, density = 5) => {
@@ -224,22 +300,24 @@
     }
 
     const createLife = () => {
-      let columns = document.getElementById('columns').value;
-      let rows = document.getElementById('rows').value;
+      let width = window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
+      let height = window.innerHeight
+        || document.documentElement.clientHeight
+        || document.body.clientHeight;
+      let columns = Math.floor(width / 25);
+      let rows = Math.floor(height / 25);
+      document.getElementById('columns').value = columns;
+      document.getElementById('rows').value = rows;
       initialiseLife(rows, columns, 3);
     }
 
     autoPilotButton.addEventListener('click', () => {
-      if (autoPilot) {
-        clearInterval(autoPilotID);
-      } else {
-        autoPilotID = setInterval(() => {
-          life.nextGeneration();
-          renderLife();
-        }, 1000);
-      }
       autoPilot = !autoPilot;
-      autoPilotButton.textContent = `Auto pilot ${autoPilot ? 'off' : 'on'}`;
+      autoPilotButton.textContent = `Switch autopilot ${autoPilot ? 'off' : 'on'}`;
+      life.nextGeneration();
+      renderLife();
     });
 
     createLifeButton.addEventListener('click', () => {
