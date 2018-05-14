@@ -1,3 +1,6 @@
+![][logo]
+[logo]: ./img/apple-icon.png "Game of Life!"
+
 # Life
 
 Vanilla ES6 implementation of the game of life
