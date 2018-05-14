@@ -1,0 +1,88 @@
+.cell {
+  border-radius: 50%;
+  height: 20px;
+  margin: 0px;
+  width: 20px;
+}
+
+.alive {
+  /* animation: alive-pulse 1s infinite; */
+  background-color: #f5b623;
+  height: 18px;
+  margin: 1px;
+  width: 18px;
+}
+
+.dead {
+  /* animation: dead-pulse 1s infinite; */
+  background-color: darkgray;
+  height: 6px;
+  margin: 7px;
+  width: 6px;
+}
+
+.alive,
+.dead {
+  transition: width 1.5s, height 1.5s, margin 1.5s, background-color 1.5s;
+}
+
+@keyframes alive-pulse {
+  0% {
+    background-color: #f5b623;
+    /* height: 18px;
+    margin: 1px;
+    width: 18px; */
+  }
+  25% {
+    background-color: #f6dd7a;
+    /* height: 16px;
+    margin: 2px;
+    width: 16px; */
+  }
+  50% {
+    background-color: #f5b623;
+    /* height: 18px;
+    margin: 1px;
+    width: 18px; */
+  }
+  75% {
+    background-color: #cda74e;
+    /* height: 20px;
+    margin: 0px;
+    width: 20px; */
+  }
+  100% {
+    background-color: #f5b623;
+    /* height: 18px;
+    margin: 1px;
+    width: 18px; */
+  }
+}
+
+@keyframes dead-pulse {
+  0% {
+    height: 6px;
+    margin: 7px;
+    width: 6px;
+  }
+  25% {
+    height: 4px;
+    margin: 8px;
+    width: 4px;
+  }
+  50% {
+    height: 6px;
+    margin: 7px;
+    width: 6px;
+  }
+  75% {
+    height: 8px;
+    margin: 6px;
+    width: 8px;
+  }
+  100% {
+    height: 6px;
+    margin: 7px;
+    width: 6px;
+  }
+}

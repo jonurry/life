@@ -9,6 +9,33 @@
 	],
 "creatorBuild": "26680",
 "files": {
+	"\/app.css": {
+		"aP": 1,
+		"bl": 0,
+		"ft": 16,
+		"ma": 0,
+		"oA": 0,
+		"oAP": "\/docs\/app.css",
+		"oF": 0,
+		"oS": 1
+		},
+	"\/app.js": {
+		"ft": 64,
+		"ma": 0,
+		"mi": 0,
+		"oA": 0,
+		"oAP": "\/docs\/app.js",
+		"oF": 2,
+		"sC": 3,
+		"tS": 0
+		},
+	"\/CNAME": {
+		"cB": 0,
+		"ft": 8192,
+		"oA": 1,
+		"oAP": "\/docs\/CNAME",
+		"oF": 1
+		},
 	"\/docs": {
 		"ft": 65536,
 		"oA": 1,
@@ -51,7 +78,7 @@
 	"displayValueWasSetByUser": 0,
 	"iconImageName": "brackets_orange",
 	"iconImageWasSetByUser": 0,
-	"lastBuiltDate": 545925288
+	"lastBuiltDate": 547985286
 	},
 "projectSettings": {
 	"abortBuildOnError": 1,
@@ -450,7 +477,7 @@
 		},
 	"esLintConfigFileHandlingType": 0,
 	"esLintECMAVersion": 7,
-	"esLintEnvironmentsMask": 1,
+	"esLintEnvironmentsMask": 17,
 	"esLintRules": {
 		"accessor-pairs": {
 			"active": 0,
@@ -1812,14 +1839,14 @@
 		"transpilerStyle": 1
 		},
 	"languageDefaultsCSS": {
-		"autoOutputAction": 2,
+		"autoOutputAction": 0,
 		"autoOutputPathFilenamePattern": "*.css",
 		"autoOutputPathRelativePath": "",
 		"autoOutputPathReplace1": "",
 		"autoOutputPathReplace2": "",
 		"autoOutputPathStyle": 0,
 		"createSourceMap": 0,
-		"outputStyle": 3,
+		"outputStyle": 1,
 		"shouldRunAutoprefixer": 1,
 		"shouldRunBless": 0
 		},
