@@ -1,5 +1,5 @@
 ![][logo]
-[logo]: ./img/apple-icon.png "Game of Life!"
+[logo]: https://github.com/jonurry/life/img/apple-icon.png "Game of Life!"
 
 # Life
 
